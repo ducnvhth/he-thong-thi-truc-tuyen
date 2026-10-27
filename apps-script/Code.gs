@@ -349,7 +349,9 @@ function getLeaderboard_() {
 
 /* ============================ TIEN ICH CHO BAN TO CHUC ============================ */
 
-/** Chay 1 lan de khoi tao cac sheet: PhienThi, KetQua. */
+/** 
+ * 1. KHỞI TẠO TIÊU ĐỀ BẢNG (Chạy 1 lần để thiết lập hoặc định dạng lại dòng 1)
+ */
 function setupSheets() {
   const pSh = sessionsSheet_();
   pSh.getRange(1, 1, 1, 7).setValues([['Token', 'Số điện thoại', 'Họ và tên', 'Đơn vị', 'Thời điểm bắt đầu (ms)', 'Đề thi (JSON)', 'Trạng thái']]).setFontWeight('bold');
@@ -362,17 +364,68 @@ function setupSheets() {
   return 'Đã cập nhật đúng tiêu đề các cột cho PhienThi và KetQua.';
 }
 
-/** Dat lai phien thi cua 1 thi sinh (cho thi lai bang SĐT): xoa dong trong PhienThi va KetQua. */
+/**
+ * 2. XÓA TOÀN BỘ DỮ LIỆU THI (LÀM SẠCH ĐỂ THI MỚI TỪ ĐẦU)
+ * Chọn hàm này trên thanh công cụ Apps Script và bấm "Chạy".
+ * Hệ thống sẽ xóa sạch toàn bộ dữ liệu từ dòng 2 trở đi ở cả 2 bảng PhienThi và KetQua.
+ */
+function clearAllData() {
+  const ss = getSpreadsheet_();
+  let clearedSessions = 0;
+  let clearedResults = 0;
+
+  // Xóa toàn bộ dữ liệu sheet PhienThi từ dòng 2
+  const pSh = ss.getSheetByName(CONFIG.SHEET_SESSIONS);
+  if (pSh && pSh.getLastRow() > 1) {
+    clearedSessions = pSh.getLastRow() - 1;
+    pSh.deleteRows(2, clearedSessions);
+  }
+
+  // Xóa toàn bộ dữ liệu sheet KetQua từ dòng 2
+  const rSh = ss.getSheetByName(CONFIG.SHEET_RESULTS);
+  if (rSh && rSh.getLastRow() > 1) {
+    clearedResults = rSh.getLastRow() - 1;
+    rSh.deleteRows(2, clearedResults);
+  }
+
+  // Đảm bảo dòng 1 luôn là tiêu đề chuẩn
+  setupSheets();
+
+  const msg = 'ĐÃ XÓA TOÀN BỘ DỮ LIỆU THI THÀNH CÔNG!\n- Đã xóa ' + clearedSessions + ' dòng trong PhienThi.\n- Đã xóa ' + clearedResults + ' dòng trong KetQua.\nTrang tính đã sạch và sẵn sàng cho cuộc thi mới.';
+  Logger.log(msg);
+  return msg;
+}
+
+/**
+ * 3. ĐẶT LẠI PHIÊN THI CỦA 1 THÍ SINH (Cho phép 1 SĐT được thi lại)
+ * Điền số điện thoại cần xóa vào biến SĐT bên dưới, rồi bấm nút "Chạy".
+ */
+const PHONE_RESET = '123456789'; // <--- ĐIỀN SỐ ĐIỆN THOẠI CẦN CHO THI LẠI VÀO ĐÂY
+
 function resetCandidate(phone) {
-  const p = normPhone_(phone);
-  [[CONFIG.SHEET_SESSIONS, 2], [CONFIG.SHEET_RESULTS, 2]].forEach(function (cfg) {
-    const sh = getSpreadsheet_().getSheetByName(cfg[0]);
+  const target = normPhone_(phone || PHONE_RESET);
+  if (!target) {
+    Logger.log('Chưa nhập số điện thoại cần reset! Hãy điền vào biến PHONE_RESET ở dòng trên.');
+    return 'Lỗi: Chưa có số điện thoại.';
+  }
+  const targetNoZero = target.replace(/^0+/, '');
+  const ss = getSpreadsheet_();
+  let deletedCount = 0;
+
+  [CONFIG.SHEET_SESSIONS, CONFIG.SHEET_RESULTS].forEach(function (sheetName) {
+    const sh = ss.getSheetByName(sheetName);
     if (!sh || sh.getLastRow() < 2) return;
-    const vals = sh.getRange(2, cfg[1], sh.getLastRow() - 1, 1).getValues();
+    const vals = sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues(); // Cột 2 (B) là Số điện thoại
     for (let i = vals.length - 1; i >= 0; i--) {
-      if (normPhone_(vals[i][0]) === p) sh.deleteRow(i + 2);
+      const cellPhone = normPhone_(vals[i][0]);
+      if (cellPhone === target || (targetNoZero && cellPhone.replace(/^0+/, '') === targetNoZero)) {
+        sh.deleteRow(i + 2);
+        deletedCount++;
+      }
     }
   });
-  Logger.log('Đã xóa dữ liệu thi của SĐT: ' + phone);
-  return 'Đã xóa dữ liệu thi của SĐT: ' + phone;
+
+  const msg = 'ĐÃ XÓA DỮ LIỆU CỦA SĐT ' + target + ' (' + deletedCount + ' dòng đã xóa). Thí sinh này có thể vào thi lại ngay.';
+  Logger.log(msg);
+  return msg;
 }

@@ -49,11 +49,15 @@ Bạn có thể tùy chỉnh các thông số trong `Code.gs` theo yêu cầu cu
 
 ---
 
-## 5. Quản trị & Cho thi lại
-- Nếu có thí sinh gặp sự cố đặc biệt (hỏng máy tính, mất điện...) và Ban tổ chức muốn cho phép thi lại:
-  - Mở Apps Script, chọn hàm **`resetCandidate`**, truyền số điện thoại của thí sinh vào hoặc xóa dòng của thí sinh đó trong cả 2 sheet `PhienThi` và `KetQua`.
-  - Ví dụ: Chạy lệnh `resetCandidate("0912345678")`.
-- Bảng xếp hạng hiển thị Họ tên, Đơn vị và Số điện thoại (được ẩn 3 số giữa dạng `0912***678` để bảo vệ quyền riêng tư cá nhân).
+## 5. Quản trị: Xóa dữ liệu & Cho thi lại
+- **Xóa toàn bộ dữ liệu (Làm sạch bảng để mở cuộc thi chính thức)**:
+  - Trong Apps Script, chọn hàm **`clearAllData`** trên thanh công cụ và bấm **Chạy**.
+  - Hệ thống sẽ xóa sạch toàn bộ các dòng bài thi từ dòng 2 trở đi ở cả 2 bảng `PhienThi` và `KetQua`, giữ lại đúng dòng tiêu đề chuẩn.
+- **Cho phép 1 thí sinh thi lại (Reset theo Số điện thoại)**:
+  - Mở file `Code.gs`, tìm dòng `const PHONE_RESET = '...';` (khoảng dòng 400).
+  - Điền số điện thoại cần reset vào đó, ví dụ: `const PHONE_RESET = '0912345678';`.
+  - Chọn hàm **`resetCandidate`** trên thanh công cụ và bấm **Chạy**.
+- **Hoặc xóa thủ công trên Google Sheet**: Bạn chỉ cần xóa dòng của thí sinh đó trong cả 2 sheet `PhienThi` và `KetQua`.
 
 ---
 
