@@ -1246,13 +1246,17 @@
       return p.slice(0, 4) + '***' + p.slice(-3);
     }
 
-    const currentPhone = (candidate.phone || "").trim();
-    const currentNameNorm = (candidate.fullName || "").trim().toLowerCase();
+    function cleanPhoneDigits(p) {
+      if (!p) return '';
+      return String(p).replace(/[^0-9]/g, '').replace(/^0+/, '');
+    }
 
-    const myResult = data.find(item => 
-      (currentPhone && item.phone && item.phone === currentPhone) ||
-      (currentNameNorm && item.fullName && item.fullName.trim().toLowerCase() === currentNameNorm)
-    );
+    const currentPhoneClean = cleanPhoneDigits(candidate.phone);
+
+    const myResult = currentPhoneClean 
+      ? data.find(item => cleanPhoneDigits(item.phone) === currentPhoneClean)
+      : null;
+
     if (myResult && document.getElementById('score-summary')) {
       document.getElementById('score-summary').innerText = `Kết quả của bạn: ${myResult.score} / ${myResult.totalQuestions} câu`;
     }
@@ -1263,10 +1267,7 @@
       else if (index === 1) rankClass = "rank-2";
       else if (index === 2) rankClass = "rank-3";
 
-      const isCurrentCandidate = (
-        (currentPhone && item.phone && item.phone === currentPhone) ||
-        (currentNameNorm && item.fullName && item.fullName.trim().toLowerCase() === currentNameNorm)
-      );
+      const isCurrentCandidate = Boolean(currentPhoneClean && (cleanPhoneDigits(item.phone) === currentPhoneClean));
 
       const rowHighlightClass = isCurrentCandidate ? "highlight-candidate-row" : "";
       const youBadge = isCurrentCandidate ? `<span class="my-badge">Bài của bạn</span>` : "";
