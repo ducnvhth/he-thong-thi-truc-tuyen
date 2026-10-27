@@ -3,12 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Hệ Thống Thi Trực Tuyến Viện kiểm sát nhân dân khu vực 1 - Hà Tĩnh</title>
+  <title>Hệ Thống Thi Trực Tuyến</title>
   <style>
+    html { background: #0a2f9c; }
+    /* Lớp 1: ảnh nền làm mờ phủ kín (lấp hai bên khi màn hình ngang) */
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -2;
+      background: url('bg.jpg') center / cover no-repeat;
+      filter: blur(18px) brightness(0.85);
+      transform: scale(1.1);
+    }
+    /* Lớp 2: ảnh nền nguyên bản, vừa chiều cao màn hình, không bị cắt logo/tiêu đề */
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background: url('bg.jpg') center top / auto 100% no-repeat;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { 
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-      background: #eef2f7; 
+      background: transparent;
       min-height: 100vh; 
       display: flex; 
       align-items: center; 
@@ -454,8 +467,43 @@
     .btn-modal-confirm:hover { background: #1251a3; }
     .hidden { display: none !important; }
 
+    /* MÀN HÌNH ĐĂNG NHẬP: bố cục theo ảnh nền bg.jpg
+       - Ảnh dọc (~0.707): vùng trên (~0-40%) chứa logo + tiêu đề, vùng dưới (~91-100%) là logo VNPT
+       - Vùng trống để đặt form: ~41% -> ~90% chiều cao ảnh */
+    /* Toàn bộ kích thước bên trong dùng đơn vị em, gốc = font-size của #login-screen.
+       font-size theo chiều cao màn hình (vh) -> form co giãn cùng tỉ lệ với ảnh nền (cao 100vh),
+       nên luôn nằm gọn trong vùng trống, không tràn khi kéo giãn cửa sổ. */
+    #login-screen {
+      align-self: flex-start;
+      margin-top: calc(41vh - 15px);
+      font-size: clamp(6px, min(1.8vh, 4.4vw), 22px);
+      width: 100%;
+      max-width: 33em;
+      padding: 1.2em 1.4em 1.1em;
+      border-radius: 0.8em;
+      background: linear-gradient(160deg, rgba(10, 50, 150, 0.55), rgba(6, 28, 110, 0.65));
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 0.6em 1.8em rgba(0, 10, 60, 0.45);
+    }
+    #login-screen .notice-bar { margin-bottom: 1em; padding: 0.55em 0.85em; font-size: 0.85em; gap: 0.75em; border-radius: 0.5em; }
+    #login-screen .notice-icon { width: 1.8em; height: 1.8em; font-size: 0.85em; }
+    #login-screen .form-container { max-width: 100%; }
+    #login-screen .form-row { flex-direction: column; align-items: stretch; margin-bottom: 0.75em; }
+    #login-screen .form-label { width: 100%; text-align: left; padding: 0 0 0.3em; font-size: 0.92em; }
+    #login-screen .form-input { padding: 0.6em 0.9em; font-size: 0.95em; border-radius: 0.4em; }
+    #login-screen .form-actions { margin-left: 0; margin-top: 0.3em; flex-direction: column; align-items: stretch; gap: 0.7em; }
+    #login-screen .checkbox-label { font-size: 0.9em; white-space: nowrap; }
+    #login-screen .checkbox-label input { width: 1.1em; height: 1.1em; }
+    #login-screen .action-buttons-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7em; }
+    #login-screen .btn-login, #login-screen .btn-secondary {
+      width: 100%; padding: 0.7em 0.5em; font-size: 0.92em; white-space: nowrap; border-radius: 0.4em;
+    }
+
     @media (max-width: 680px) {
       body { padding: 10px; }
+      #login-screen { margin-top: calc(41vh - 10px); }
       .portal-box, .exam-box { padding: 25px 16px; border-radius: 8px; }
       .unit-brand-header { flex-direction: column; gap: 12px; margin-bottom: 18px; }
       .unit-brand-header img { width: 68px; height: 68px; }
@@ -480,14 +528,6 @@
 <body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
 
   <div id="login-screen" class="portal-box">
-    <div class="unit-brand-header">
-      <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/b/ba/Ph%C3%B9_hi%E1%BB%87u_Vi%E1%BB%87n_ki%E1%BB%83m_s%C3%A1t_nh%C3%A2n_d%C3%A2n.svg'" alt="Phù hiệu VKSND">
-      <div class="unit-brand-text">
-        <h1>VIỆN KIỂM SÁT NHÂN DÂN KHU VỰC 1 - HÀ TĨNH</h1>
-        <h2>HỆ THỐNG THI TRỰC TUYẾN</h2>
-      </div>
-    </div>
-
     <div class="notice-bar">
       <span class="notice-icon">✕</span>
       <span>Yêu cầu làm bài độc lập: Mỗi thí sinh tham gia 01 lần. Bảng xếp hạng sẽ tự động mở khi có đủ từ 5 thí sinh.</span>
@@ -502,9 +542,16 @@
       </div>
 
       <div class="form-row">
-        <label class="form-label" for="user-id">Số báo danh / Mã số:</label>
+        <label class="form-label" for="unit-name">Đơn vị công tác:</label>
         <div class="form-input-wrap">
-          <input type="text" id="user-id" class="form-input" placeholder="Nhập SBD của bạn (Ví dụ: ha_tinh_01)" required autocomplete="off">
+          <input type="text" id="unit-name" class="form-input" placeholder="Nhập cơ quan / đơn vị / chi đoàn" required autocomplete="off">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="phone-number">Số điện thoại:</label>
+        <div class="form-input-wrap">
+          <input type="tel" id="phone-number" class="form-input" placeholder="Nhập số điện thoại (Ví dụ: 0912345678)" inputmode="numeric" pattern="[0-9]*" maxlength="11" required autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onkeydown="if(!(['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Enter'].includes(event.key) || (event.key >= '0' && event.key <= '9') || event.ctrlKey || event.metaKey)){ event.preventDefault(); }">
         </div>
       </div>
 
@@ -518,18 +565,11 @@
         </div>
       </div>
     </div>
-
-    <div class="portal-footer">
-      Bản quyền thuộc: Tổ giúp việc chuyển đổi số - Viện kiểm sát nhân dân khu vực 1<br>
-      Mọi thắc mắc kỹ thuật trong quá trình làm bài vui lòng liên hệ Ban tổ chức
-    </div>
   </div>
 
   <div id="exam-screen" class="exam-box hidden">
     <div class="unit-brand-header">
-      <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/b/ba/Ph%C3%B9_hi%E1%BB%87u_Vi%E1%BB%87n_ki%E1%BB%83m_s%C3%A1t_nh%C3%A2n_d%C3%A2n.svg'" alt="Phù hiệu VKSND">
       <div class="unit-brand-text">
-        <h1>VIỆN KIỂM SÁT NHÂN DÂN KHU VỰC 1 - HÀ TĨNH</h1>
         <h2>HỆ THỐNG THI TRỰC TUYẾN</h2>
       </div>
     </div>
@@ -562,9 +602,7 @@
 
   <div id="result-screen" class="exam-box hidden" style="text-align: center; padding: 30px 20px;">
     <div class="unit-brand-header" style="margin-bottom: 20px;">
-      <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/b/ba/Ph%C3%B9_hi%E1%BB%87u_Vi%E1%BB%87n_ki%E1%BB%83m_s%C3%A1t_nh%C3%A2n_d%C3%A2n.svg'" alt="Phù hiệu VKSND">
       <div class="unit-brand-text">
-        <h1>VIỆN KIỂM SÁT NHÂN DÂN KHU VỰC 1 - HÀ TĨNH</h1>
         <h2>HỆ THỐNG THI TRỰC TUYẾN</h2>
       </div>
     </div>
@@ -579,9 +617,7 @@
 
   <div id="leaderboard-screen" class="exam-box hidden" style="padding: 30px 20px;">
     <div class="unit-brand-header" style="margin-bottom: 20px;">
-      <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/vi/b/ba/Ph%C3%B9_hi%E1%BB%87u_Vi%E1%BB%87n_ki%E1%BB%83m_s%C3%A1t_nh%C3%A2n_d%C3%A2n.svg'" alt="Phù hiệu VKSND">
       <div class="unit-brand-text">
-        <h1>VIỆN KIỂM SÁT NHÂN DÂN KHU VỰC 1 - HÀ TĨNH</h1>
         <h2>BẢNG XẾP HẠNG THI TRỰC TUYẾN</h2>
       </div>
     </div>
@@ -645,73 +681,12 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdrt7B2Lp1CBC9s7HDcdTQp4OVx9pqsKRa7UNa5xMJHzCFIbF9_NB6vvCr4M3CG7MpiQ/exec";
   const DURATION_MINUTES = 15;
   const MAX_VIOLATIONS = 3;
-  const EXAM_QUESTION_COUNT = 30;
-  const STORAGE_KEY = "VKS_EXAM_SESSION_STATE_2026";
+  const STORAGE_KEY = "VKS_EXAM_SESSION_STATE_2026_V3";
 
-  const rawQuestions = [
-    { id: 1, question: "Tinh thần xuyên suốt của Quy định số 207QĐ/TW về những điều đảng viên không được làm nhằm tạo động lực công tác nhưng vẫn giữ nghiêm kỷ cương là gì?", options: ["Cấm tuyệt đối mọi hành vi thử nghiệm cách làm mới chưa có tiền lệ.", "Cho phép đảng viên tùy nghi quyết định biện pháp công tác ngoài quy định tố tụng.", "Không hạn chế tinh thần đổi mới sáng tạo, dám nghĩ, dám làm vì lợi ích chung, lợi ích quốc gia dân tộc.", "Miễn trừ kỷ luật hoàn toàn cho đảng viên giữ chức vụ lãnh đạo, quản lý."] },
-    { id: 2, question: "Trong quá trình xử lý vụ án hình sự, hành vi nào dưới đây của Kiểm sát viên vi phạm nghiêm trọng quy định về thực hiện trách nhiệm nêu gương và phòng, chống biểu hiện tiêu cực?", options: ["Thấy vi phạm của cơ quan tiến hành tố tụng khác nhưng im lặng, né tránh, không dám đấu tranh, bảo vệ công lý.", "Đề xuất quan điểm giải quyết thận trọng, đúng bản chất khách quan.", "Trực tiếp trao đổi, giải thích quyền và nghĩa vụ cho bị can tại phòng hỏi cung.", "Báo cáo bằng văn bản các khó khăn về thu thập chứng cứ với Viện trưởng."] },
-    { id: 3, question: "Khi tiếp cận thông tin, hồ sơ mật liên quan đến chuyên án đang giải quyết, hành vi nào sau đây là trái với quy định bảo mật của Đảng và pháp luật?", options: ["Lưu giữ tài liệu tại tủ hồ sơ nghiệp vụ có khóa bảo mật tại cơ quan.", "Lập biên bản bàn giao chứng cứ theo đúng trình tự tố tụng.", "Báo cáo nội dung vụ việc trong cuộc họp giao ban nội bộ được phân công.", "Cung cấp, chia sẻ tiến độ giải quyết vụ việc cho người thân quen hoặc mạng xã hội khi chưa được phép công bố."] },
-    { id: 4, question: "Quy định số 207QĐ/TW đã bổ sung hành vi bị cấm nào sau đây nhằm bắt kịp sự phát triển của công nghệ thông tin và chuyển đổi số?", options: ["Cấm cán bộ sử dụng máy tính cơ quan để soạn thảo cáo trạng.", "Cấm tra cứu văn bản quy phạm pháp luật trực tuyến.", "Cấm sử dụng hạ tầng Internet, mạng xã hội, nền tảng số, trí tuệ nhân tạo để tạo lập, phát tán thông tin sai sự thật.", "Cấm ứng dụng số hóa sơ đồ tư duy trong báo cáo án."] },
-    { id: 5, question: "Đảng viên trong cơ quan bảo vệ pháp luật có quyền và nghĩa vụ như thế nào khi phát hiện hành vi tham nhũng, lãng phí xảy ra ngay trong cơ quan, đơn vị mình?", options: ["Có trách nhiệm kịp thời báo cáo, xử lý theo thẩm quyền; không được có hành vi biết mà không báo cáo, né tránh giải quyết.", "Giữ im lặng tuyệt đối để bảo vệ thành tích thi đua của tập thể.", "Bàn tán trên mạng xã hội trước khi báo cáo cấp ủy.", "Tự ý lập hồ sơ xử lý mà không cần thông qua lãnh đạo đơn vị."] },
-    { id: 6, question: "Hành vi nào sau đây về đơn thư khiếu nại, tố cáo bị Đảng nghiêm cấm đối với mọi cán bộ, đảng viên?", options: ["Gửi đơn tố cáo đúng địa chỉ cơ quan có thẩm quyền giải quyết.", "Đề nghị người có thẩm quyền bảo vệ tính mạng khi dũng cảm tố giác tội phạm.", "Viết đơn tố cáo giấu tên, mạo tên, nội dung mang tính bịa đặt hoặc cùng người khác ký tên tập thể trong đơn tố cáo.", "Cung cấp chứng cứ chứng minh vi phạm cho cơ quan thanh tra, kiểm tra."] },
-    { id: 7, question: "Trong công tác cán bộ, hành vi nào dưới đây bị xác định là biểu hiện tiêu cực, \"chạy chức, chạy quyền\"?", options: ["Tích cực học tập nâng cao trình độ chuyên môn, thi sát hạch để bổ nhiệm Kiểm sát viên theo đúng đề án.", "Tự giác chấp hành sự phân công, luân chuyển công tác của lãnh đạo Viện.", "Tham gia đánh giá, nhận xét đồng nghiệp khách quan theo đúng tiêu chí.", "Tác động, nhờ người có chức vụ can thiệp để bản thân được điều động về vị trí công tác thuận lợi hơn."] },
-    { id: 8, question: "Việc người đứng đầu một đơn vị sắp xếp, bổ nhiệm vị trí quản lý tài sản, ngân sách thì hành vi nào sau đây bị nghiêm cấm?", options: ["Lựa chọn cán bộ có chứng chỉ kế toán, đủ phẩm chất đạo đức và uy tín.", "Lợi dụng việc sắp xếp tổ chức bộ máy để bố trí người không đủ năng lực, uy tín vào vị trí có quyền phân bổ nguồn lực.", "Thực hiện công khai, dân chủ trong quy trình thẩm định nhân sự tài chính.", "Lấy phiếu tín nhiệm tập thể cán bộ chủ chốt trước khi ra quyết định."] },
-    { id: 9, question: "Trong quá trình tiếp cận giải quyết vụ việc dân sự hoặc hình sự, Kiểm sát viên nhận quà biếu dưới mọi hình thức của đương sự để ra đề xuất giải quyết có lợi cho họ là vi phạm quy định nào?", options: ["Vi phạm quy định về tặng và nhận quà để dẫn đến việc quyết định sai, trục lợi cá nhân.", "Vi phạm quy định về bảo vệ bí mật công tác ngành.", "Vi phạm quy chế phát ngôn và cung cấp thông tin cho báo chí.", "Vi phạm về nếp sống văn minh nơi công sở."] },
-    { id: 10, question: "Quy định nào sau đây thể hiện rõ tính chất đặc thù ngăn chặn sự can thiệp trái pháp luật vào hoạt động tư pháp của ngành Kiểm sát?", options: ["Cấm Kiểm sát viên tham gia các lớp tập huấn kỹ năng hỏi cung.", "Cấm can thiệp, tác động, áp đặt vào hoạt động điều tra, truy tố, xét xử, thi hành án để làm sai lệch hồ sơ, bao che sai phạm.", "Cấm lãnh đạo Viện kiểm tra chất lượng bản cáo trạng của cấp dưới.", "Cấm Kiểm sát viên đề xuất mức án tại phiên tòa xét xử công khai."] },
-    { id: 11, question: "Cán bộ kiểm sát lợi dụng danh nghĩa cá nhân đi du lịch, nghỉ dưỡng được đài thọ kinh phí hoàn toàn bởi một doanh nghiệp đang là đối tượng trong vụ việc kiểm sát sẽ bị coi là:", options: ["Việc giao lưu quan hệ xã hội thông thường ngoài giờ làm việc.", "Hoạt động ngoại giao công chúng được khuyến khích.", "Một hình thức xã hội hóa hoạt động cơ quan tư pháp.", "Vi phạm điều cấm về việc đi du lịch bằng nguồn tài trợ của đối tượng thuộc địa bàn, lĩnh vực mình theo dõi, quản lý."] },
-    { id: 12, question: "Kiểm sát viên không được làm điều nào sau đây khi tiến hành kê khai tài sản, thu nhập định kỳ hàng năm?", options: ["Khai báo đầy đủ các bất động sản và phương tiện đứng tên vợ chồng.", "Nộp bản kê khai đúng thời hạn quy định cho bộ phận tổ chức cán bộ.", "Báo cáo, kê khai tài sản thu nhập không trung thực; không giải trình được nguồn gốc tài sản có biến động.", "Niêm yết công khai bản kê khai theo quy định của cơ quan."] },
-    { id: 13, question: "Hành vi tự ý mở tài khoản ở nước ngoài, chuyển tiền, tài sản ra nước ngoài mà không chấp hành các quy định của Đảng và Nhà nước là:", options: ["Hành vi bị nghiêm cấm đối với đảng viên.", "Quyền tự do kinh doanh quốc tế của công dân.", "Được phép nếu có giá trị dưới 1 tỷ đồng.", "Được phép nếu đã có ý kiến của chi ủy chi bộ nơi sinh hoạt."] },
-    { id: 14, question: "Biểu hiện cán bộ làm việc với tâm lý \"làm ít sai ít, không làm không sai\", né tránh đùn đẩy hồ sơ khó khăn lên cấp trên để khỏi chịu trách nhiệm thuộc nhóm hành vi nào bị cấm?", options: ["Vi phạm về kỷ luật tài chính cơ quan.", "Vi phạm về công tác văn thư, lưu trữ.", "Vi phạm về bí mật đời tư cá nhân.", "Vi phạm đạo đức công vụ, biểu hiện sợ trách nhiệm, làm việc cầm chừng trong thực thi nhiệm vụ."] },
-    { id: 15, question: "Tại một đơn vị VKSND khu vực, Kiểm sát viên A tự ý nhận làm tư vấn pháp lý có thù lao cho một người bị tố giác tội phạm tại địa bàn khác. Hành vi của A là:", options: ["Hợp pháp nếu thực hiện vào ngày thứ Bảy, Chủ nhật.", "Vi phạm điều cấm của đảng viên về việc làm những việc pháp luật cấm và vi phạm Luật tổ chức VKSND.", "Hoàn toàn phù hợp nếu người này chưa bị khởi tố bị can.", "Hành vi xã hội tích cực giúp người dân hiểu luật."] },
-    { id: 16, question: "Đảng viên sử dụng rượu, bia trong trường hợp nào sau đây là vi phạm quy định của Đảng và văn hóa công sở ngành Kiểm sát?", options: ["Uống rượu bia trong giờ làm việc, giờ nghỉ trưa ngày làm việc hoặc uống đến mức mất kiểm soát hành vi, vi phạm an toàn giao thông.", "Uống một lượng nhỏ rượu vang trong tiệc mừng năm mới tại gia đình.", "Từ chối uống rượu bia khi tham gia điều khiển phương tiện giao thông.", "Khuyên can người thân không lái xe sau khi đã uống bia."] },
-    { id: 17, question: "Khi tổ chức việc cưới, tang trong gia đình cán bộ, đảng viên cần quán triệt tinh thần cốt lõi nào theo quy định của Đảng?", options: ["Phải làm thật hoành tráng để khẳng định uy tín của ngành Kiểm sát.", "Mời toàn bộ các đối tượng đang chịu sự kiểm sát tư pháp đến tham dự.", "Tiết kiệm, văn minh, phù hợp nếp sống mới; không xa hoa, lãng phí và không được lợi dụng để vụ lợi.", "Chỉ tổ chức tang lễ, không được phép tổ chức đám cưới."] },
-    { id: 18, question: "Đảng viên hoạt động mê tín dị đoan, tổ chức các nghi thức bói toán, cầu cúng thăng quan tiến chức bị Đảng xử lý như thế nào?", options: ["Là tự do tín ngưỡng cá nhân, Đảng không can thiệp.", "Được phép nếu thực hiện ngoài phạm vi trụ sở Viện kiểm sát.", "Chỉ bị nhắc nhở nội bộ nếu không gây mất an ninh trật tự.", "Bị nghiêm cấm vì đi ngược lại thế giới quan khoa học của người chiến sĩ cách mạng."] },
-    { id: 19, question: "Quy định 207QĐ/TW nghiêm cấm đảng viên tham gia biểu tình, tụ tập đông người trái pháp luật nhằm mục đích gì?", options: ["Hạn chế quyền đi lại của công dân.", "Bảo đảm an ninh trật tự xã hội, giữ nghiêm tính gương mẫu của người đảng viên không bị phần tử xấu kích động, lôi kéo.", "Ngăn cản đảng viên đóng góp ý kiến về chính sách xã hội.", "Bắt buộc đảng viên chỉ được sinh hoạt tại nơi cư trú."] },
-    { id: 20, question: "Khi phát hiện đảng viên thuộc quyền quản lý có dấu hiệu vi phạm Quy định số 207QĐ/TW, người đứng đầu đơn vị phải có thái độ xử lý đúng mực ra sao?", options: ["Lãnh đạo, chỉ đạo xử lý nghiêm minh, khách quan, chính xác, kịp thời và báo cáo cấp ủy cấp trên theo quy định.", "Bao che, dàn xếp nội bộ để bảo vệ thành tích đơn vị.", "Chờ đến hết nhiệm kỳ mới đưa ra kiểm điểm.", "Yêu cầu đảng viên đó viết đơn xin ra khỏi Đảng để tránh kỷ luật cơ quan."] },
-    { id: 21, question: "Theo tinh thần thi hành Điều lệ Đảng mới nhất (Quy định 208QĐ/TW), hệ thống tổ chức cơ bản của Đảng có chức năng lãnh đạo toàn diện được xây dựng gắn với các cấp nào?", options: ["Cấp bộ ngành Trung ương và các ban ngành cấp tỉnh.", "Cấp khu vực, cấp vùng kinh tế và cấp quốc gia.", "Cấp xã (gồm: xã, phường, đặc khu), cấp tỉnh, thành phố và cấp Trung ương.", "Cấp huyện, cấp tỉnh và cấp Trung ương."] },
-    { id: 22, question: "Tên gọi đồng bộ các loại hình tổ chức đảng ở cấp cơ sở đang được thí điểm thống nhất trong toàn Đảng gồm những mô hình nào?", options: ["Chi bộ cơ quan, Đảng bộ bộ phận và Đảng bộ cấp trên trực tiếp cơ sở.", "Chi bộ xóm, Chi bộ khối phố và Đảng bộ thị trấn.", "Tổ đảng, Phân chi bộ và Chi bộ cơ sở.", "Đảng bộ cơ sở, đảng bộ trực thuộc cơ sở và chi bộ."] },
-    { id: 23, question: "Nguyên tắc cốt lõi, cơ bản nhất trong toàn bộ tổ chức và sinh hoạt của Đảng Cộng sản Việt Nam là:", options: ["Tập trung dân chủ (tập thể lãnh đạo, cá nhân phụ trách, thiểu số phục tùng đa số).", "Thủ trưởng chế độ quyết định.", "Dân chủ biểu quyết hoàn toàn không cần cấp trên phê duyệt.", "Cấp phó quyết định khi người đứng đầu vắng mặt."] },
-    { id: 24, question: "Một nghị quyết của chi bộ hoặc cấp ủy Đảng chỉ có giá trị thi hành khi nào?", options: ["Được toàn thể 100% đảng viên có mặt đồng ý.", "Khi có hơn một nửa (trên 50%) số thành viên trong cơ quan lãnh đạo đó tán thành theo luật định.", "Chỉ cần đồng chí Bí thư chi bộ phê chuẩn bằng văn bản.", "Có sự thống nhất của lãnh đạo cơ quan chuyên môn."] },
-    { id: 25, question: "Đối với các quyết định mang tính chất trọng yếu như: kết nạp đảng viên mới, công nhận chính thức, xóa tên hoặc khai trừ đảng viên, chi bộ cần tỷ lệ biểu quyết tán thành tối thiểu là bao nhiêu?", options: ["Quá bán (trên 50%).", "Tuyệt đối 100% đảng viên có mặt.", "Ít nhất hai phần ba (2/3) số thành viên của chi bộ nhất trí đề nghị.", "Do tập thể chi ủy quyết định, không cần biểu quyết toàn chi bộ."] },
-    { id: 26, question: "Ý nghĩa bản chất của việc thực hiện chế độ tự phê bình và phê bình định kỳ hàng năm trong chi bộ là:", options: ["Tìm ra các lỗi sai của đồng nghiệp để hạ bậc thi đua.", "Tạo diễn đàn để các nhóm tranh luận quyền lợi nội bộ.", "Hoàn thành thủ tục hành chính báo cáo cấp trên.", "Giúp tập thể và cá nhân soi rọi, phát huy ưu điểm, chỉ rõ khuyết điểm để cùng nhau sửa chữa, củng cố sự đoàn kết và trong sạch của Đảng."] },
-    { id: 27, question: "Khi chi bộ có đảng viên xin chuyển sinh hoạt đảng chính thức do chuyển công tác hoặc chuyển đơn vị, hồ sơ đảng viên được xử lý như thế nào?", options: ["Cấp ủy niêm phong hồ sơ đúng quy cách và giao trực tiếp cho đảng viên mang theo nộp cho nơi đến theo quy định.", "Đảng viên tự mở ra kiểm tra, chỉnh sửa giấy tờ nếu thấy sai sót.", "Chụp ảnh toàn bộ hồ sơ gửi qua hòm thư điện tử cá nhân.", "Không cần chuyển giao hồ sơ gốc, chỉ cần bản tóm tắt trích ngang."] },
-    { id: 28, question: "Một cán bộ trẻ của Viện kiểm sát được cử đi học tập trung tại Trường Đại học Kiểm sát trong thời gian 10 tháng, đồng chí này phải làm thủ tục chuyển sinh hoạt đảng như thế nào?", options: ["Xin ra khỏi Đảng để tập trung học tập.", "Phải chuyển sinh hoạt đảng chính thức và cắt khẩu đảng tịch tại Viện kiểm sát cơ sở", "Chuyển sinh hoạt đảng tạm thời đến đảng bộ, chi bộ nơi theo học.", "Xin miễn sinh hoạt đảng trong suốt thời gian học tập."] },
-    { id: 29, question: "Trong thời gian sinh hoạt đảng tạm thời, đảng viên có các quyền hạn và nghĩa vụ nào sau đây tại nơi sinh hoạt tạm thời?", options: ["Được tham gia bầu cử Bí thư chi bộ nơi đến học tập.", "Đóng đảng phí tại chi bộ tạm thời; thực hiện đầy đủ nhiệm vụ của đảng viên nhưng không có quyền biểu quyết, ứng cử và bầu cử tại đó.", "Hoàn toàn được miễn đóng đảng phí hàng tháng.", "Có quyền biểu quyết mọi nghị quyết của chi bộ lâm thời."] },
-    { id: 30, question: "Tuổi đời quy định chung đối với quần chúng ưu tú để được xem xét kết nạp vào Đảng tại thời điểm chi bộ họp xét là:", options: ["Đủ 18 tuổi đến đủ 60 tuổi (tính theo tháng).", "Đủ 16 tuổi trở lên.", "Không giới hạn độ tuổi tối thiểu, chỉ cần tốt nghiệp đại học.", "Đủ 20 tuổi đến 50 tuổi."] },
-    { id: 31, question: "Đảng viên dự bị trong ngành Kiểm sát sau 12 tháng phấn đấu đủ điều kiện trở thành đảng viên chính thức thì thời điểm tính tuổi Đảng được xác định như thế nào?", options: ["Tính từ ngày Chi bộ tổ chức đại hội nhiệm kỳ tiếp theo.", "Tính từ ngày tròn 12 tháng dự bị mà không quan tâm ngày ra quyết định kết nạp.", "Tính từ ngày trao thẻ đảng viên.", "Tính từ ngày cấp có thẩm quyền ban hành quyết định kết nạp lần đầu (trừ thời gian không sinh hoạt đảng)."] },
-    { id: 32, question: "Trường hợp nào sau đây chi bộ phải xem xét đề nghị cấp ủy có thẩm quyền quyết định xóa tên trong danh sách đảng viên?", options: ["Đảng viên được điều động biệt phái sang cơ quan điều tra trong thời hạn 1 năm.", "Đảng viên xin nghỉ phép năm đi chữa bệnh có xác nhận của y tế.", "Đảng viên bỏ sinh hoạt đảng hoặc không đóng đảng phí ba tháng trong năm mà không có lý do chính đáng.", "Đảng viên sinh con thứ hai theo kế hoạch gia đình."] },
-    { id: 33, question: "Thẻ đảng viên có ý nghĩa chính trị pháp lý quan trọng và được sử dụng trong trường hợp nào dưới đây?", options: ["Thay thế cho giấy chứng minh nhân dân/Căn cước công dân trong mọi giao dịch tài chính", "Dùng để biểu quyết trong sinh hoạt đảng, biểu quyết công khai tại đại hội và thực hiện thủ tục hành chính số của Đảng.", "Dùng làm tài sản thế chấp để làm thủ tục vay vốn ngân hàng mua nhà.", "Dùng để xin miễn trừ trách nhiệm khi vi phạm luật giao thông đường bộ."] },
-    { id: 34, question: "Khi phát hiện thẻ đảng viên bị mất hoặc bị rách nát, hư hỏng, đảng viên phải thực hiện việc gì đầu tiên?", options: ["Kịp thời báo cáo ngay bằng văn bản với cấp ủy, chi bộ trực tiếp quản lý, nêu rõ lý do để xem xét cấp lại hoặc đổi thẻ.", "Im lặng và nhờ người khác in thẻ mới.", "Đợi đến khi có đại hội chi bộ mới thông báo.", "Đăng bài lên mạng xã hội nhờ tìm kiếm thẻ."] },
-    { id: 35, question: "Một người trước đây đã từng bị đưa ra khỏi Đảng, trường hợp nào sau đây TUYỆT ĐỐI KHÔNG ĐƯỢC xem xét kết nạp lại vào Đảng?", options: ["Người từng xin ra khỏi Đảng vì lý do gia đình gặp khó khăn đặc biệt.", "Người từng bị kết án hình sự vì hành vi tham nhũng, lãng phí, tiêu cực hoặc phạm tội nghiêm trọng trở lên.", "Người từng bị xử lý kỷ luật lao động nhẹ đã hết thời hạn thử thách.", "Người từng chuyển vùng công tác bị gián đoạn sinh hoạt không do lỗi cá nhân."] },
-    { id: 36, question: "Một công dân đủ tiêu chuẩn nếu được kết nạp lại vào Đảng theo đúng quy định thì được xem xét kết nạp lại tối đa bao nhiêu lần?", options: ["Tối đa hai lần nếu có đóng góp xuất sắc.", "Không giới hạn số lần nếu chi bộ nhất trí 100%.", "Chỉ được kết nạp lại một lần.", "Tối đa ba lần đối với cán bộ có chức danh tư pháp."] },
-    { id: 37, question: "Việc lấy phiếu giới thiệu, nhận xét của cấp ủy nơi cư trú (Đảng viên 213) có ý nghĩa như thế nào đối với cán bộ, Kiểm sát viên?", options: ["Chỉ là thủ tục hình thức không có giá trị đánh giá.", "Nhằm mục đích nhờ cấp ủy địa phương can thiệp vào công tác nghiệp vụ kiểm sát.", "Giúp đảng viên xin miễn các nghĩa vụ công dân tại địa phương.", "Giúp gắn kết cán bộ với nhân dân nơi cư trú, theo dõi tính tiền phong gương mẫu và đạo đức lối sống của cán bộ ngoài giờ làm việc."] },
-    { id: 38, question: "Quy định về việc đóng đảng phí định kỳ của đảng viên dựa trên căn cứ khoa học nào?", options: ["Đóng theo số lượng thành viên trong gia đình đảng viên.", "Trích nộp theo tỷ lệ trên cơ sở tiền lương, phụ cấp, thu nhập theo lương quy định để duy trì kinh phí hoạt động độc lập của Đảng.", "Đóng mức đồng loạt 50.000 đồng/tháng cho mọi đối tượng.", "Đóng tùy tâm theo khả năng tài chính của từng người."] },
-    { id: 39, question: "Theo chủ trương của Đảng, việc số hóa hồ sơ kiểm sát, ứng dụng công nghệ và chuyển đổi số trong quản lý đảng viên tại Viện kiểm sát nhằm:", options: ["Nâng cao tính công khai, minh bạch, chính xác, hiện đại hóa quy trình công tác và nâng cao năng lực lãnh đạo, sức chiến đấu của tổ chức cơ sở đảng.", "Giảm bớt sự giám sát của cấp ủy cấp trên.", "Thay thế hoàn toàn sự lãnh đạo của chi bộ cơ sở.", "Phục vụ mục đích thương mại hóa dữ liệu nội bộ."] },
-    { id: 40, question: "Khi đại hội chi bộ tiến hành bầu cử cấp ủy, trường hợp hai ứng viên có số phiếu bầu ngang nhau ở chỉ tiêu cuối cùng thì ưu tiên lựa chọn ai?", options: ["Người có chức vụ chính quyền cao hơn trong đơn vị.", "Người có trình độ học vấn thạc sĩ, tiến sĩ.", "Người có tuổi Đảng cao hơn.", "Người có tuổi đời trẻ hơn."] },
-    { id: 41, question: "Mục đích nhân văn cốt lõi của công tác thi hành kỷ luật Đảng theo Quy định số 212QĐ/TW là gì?", options: ["Trừng phạt và loại trừ tối đa cán bộ ra khỏi bộ máy nhà nước.", "Giáo dục, quản lý, làm cho tổ chức đảng, đảng viên nhận thức rõ khuyết điểm, vi phạm để ăn năn, sửa chữa, khắc phục hậu quả và làm tốt hơn.", "Giảm bớt số lượng biên chế công chức trong ngành tư pháp.", "Tạo dư luận công kích đối với các cá nhân sai phạm."] },
-    { id: 42, question: "Nguyên tắc áp dụng hình thức kỷ luật đối với đảng viên có nhiều hành vi sai phạm tại cùng một thời điểm xem xét kỷ luật là:", options: ["Tách riêng từng hành vi để xử lý nhiều lần bằng các hình thức khác nhau.", "Tự động áp dụng hình thức khai trừ khỏi Đảng mà không cần xem xét tính chất.", "Miễn toàn bộ các hành vi vi phạm nhẹ, chỉ xử lý hành vi nặng nhất.", "Xem xét, kết luận từng hành vi và quyết định chung bằng một hình thức kỷ luật cao nhất tương ứng với hành vi nặng nhất."] },
-    { id: 43, question: "Mối quan hệ giữa kỷ luật Đảng và kỷ luật hành chính, kỷ luật đoàn thể hoặc việc xử lý bằng pháp luật được xác định ra sao?", options: ["Kỷ luật Đảng không thay thế kỷ luật hành chính, đoàn thể hoặc xử lý pháp luật và ngược lại; đảng viên vi phạm bị kỷ luật đảng thì phải xem xét xử lý hành chính tương ứng.", "Kỷ luật Đảng có thể thay thế hoàn toàn việc xử lý hình sự của Tòa án.", "Đã bị kỷ luật hành chính cơ quan thì không bị xem xét kỷ luật về Đảng.", "Chỉ thi hành kỷ luật Đảng khi Tòa án đã tuyên bản án có hiệu lực pháp luật."] },
-    { id: 44, question: "Hệ thống các hình thức kỷ luật chính thức của Đảng áp dụng đối với đảng viên chính thức theo Quy định 212QĐ/TW gồm những mức độ nào?", options: ["Nhắc nhở, Cảnh cáo, Giáng chức, Khai trừ.", "Khiển trách, Phạt tiền, Hạ bậc lương, Buộc thôi việc.", "Khiển trách, Cảnh cáo, Cách chức (nếu có chức vụ), Khai trừ.", "Cảnh cáo, Đình chỉ công tác, Thu hồi thẻ đảng, Khai trừ."] },
-    { id: 45, question: "Đối với đảng viên dự bị vi phạm đến mức phải thi hành kỷ luật, Đảng chỉ áp dụng những hình thức kỷ luật nào?", options: ["Cách chức và Khai trừ.", "Khiển trách và Cảnh cáo.", "Buộc chuyển công tác và Tước danh hiệu.", "Hạ bậc lương và Phạt tiền."] },
-    { id: 46, question: "Trường hợp đảng viên là cán bộ kiểm sát vi phạm pháp luật và bị Tòa án tuyên phạt hình phạt từ \"cải tạo không giam giữ\" trở lên thì tổ chức đảng xử lý kỷ luật thế nào?", options: ["Vẫn giữ lại trong Đảng nếu có cam kết sửa chữa tốt.", "Chỉ áp dụng hình thức cảnh cáo về mặt Đảng.", "Chờ hết thời gian cải tạo mới xem xét xử lý.", "Tổ chức đảng có thẩm quyền quyết định kỷ luật Khai trừ ra khỏi Đảng."] },
-    { id: 47, question: "Trường hợp nào sau đây được xác định là tình tiết giảm nhẹ mức kỷ luật cho đảng viên khi có hành vi vi phạm?", options: ["Chủ động báo cáo vi phạm trước khi bị phát hiện, tự giác nhận lỗi, tích cực khắc phục hậu quả, tự nguyện giao nộp tài sản do vi phạm mà có.", "Tìm cách tác động đến người có thẩm quyền để giảm nhẹ tội.", "Đổ lỗi cho đồng nghiệp và cấp dưới ép buộc làm sai.", "Tiêu hủy tài liệu để không làm ảnh hưởng uy tín cơ quan Viện kiểm sát."] },
-    { id: 48, question: "Hành vi nào dưới đây bị coi là tình tiết tăng nặng mức kỷ luật đối với cán bộ, đảng viên vi phạm?", options: ["Tự giác nhận hình thức kỷ luật tương xứng với sai phạm.", "Khắc phục kịp thời toàn bộ thiệt hại vật chất gây ra.", "Quanh co, đối phó, bao che sai phạm, đe dọa hoặc trả thù người tố giác, người làm chứng hoặc lợi dụng công nghệ để tiêu hủy dữ liệu, chứng cứ.", "Hợp tác cung cấp đầy đủ thông tin cho đoàn kiểm tra, giám sát."] },
-    { id: 49, question: "Nhóm đối tượng đảng viên nào sau đây thuộc trường hợp ĐƯỢC HOÃN (chưa xem xét, xử lý kỷ luật) theo quy định nhân văn của Đảng?", options: ["Cán bộ đang chuẩn bị đi du lịch nước ngoài.", "Nữ đảng viên đang mang thai, nghỉ thai sản hoặc đang nuôi con dưới 12 tháng tuổi.", "Đảng viên đang là bị can trong vụ án hình sự đặc biệt nghiêm trọng.", "Cán bộ chuẩn bị được bổ nhiệm chức vụ lãnh đạo Viện kiểm sát."] },
-    { id: 50, question: "Cán bộ, Kiểm sát viên thực hiện đề xuất đổi mới sáng tạo, đột phá giải quyết khó khăn vì lợi ích chung, đã được cấp có thẩm quyền cho phép nhưng không may xảy ra rủi ro thiệt hại khách quan thì được xem xét:", options: ["Xử lý nghiêm minh để làm gương cho người khác.", "Bắt buộc thôi việc ngay lập tức.", "Tự chịu trách nhiệm hình sự mà không được cấp ủy hỗ trợ.", "Xem xét miễn kỷ luật nếu có động cơ trong sáng, vì lợi ích chung, không có tư lợi."] },
-    { id: 51, question: "Khi một Kiểm sát viên vi phạm kỷ luật do chấp hành mệnh lệnh, chỉ đạo sai trái của thủ trưởng cấp trên, đồng chí đó sẽ được MIỄN kỷ luật trong trường hợp nào?", options: ["Đã chủ động, kịp thời báo cáo bằng văn bản về ý kiến, đề xuất phản đối mệnh lệnh sai trái đó với tổ chức, cơ quan có thẩm quyền trước khi thực hiện.", "Đã làm theo lệnh và chia phần lợi ích nhận được cho đồng nghiệp.", "Chỉ trao đổi miệng qua điện thoại riêng với lãnh đạo.", "Chờ sau khi việc đã hoàn thành mới viết đơn giải trình."] },
-    { id: 52, question: "Hành vi vi phạm nào sau đây của đảng viên KHÔNG ÁP DỤNG thời hiệu kỷ luật (nghĩa là dù xảy ra bao lâu vẫn bị xem xét xử lý kỷ luật)?", options: ["Vi phạm việc thực hiện tiếp công dân định kỳ.", "Vi phạm về nếp sống văn hóa tại nơi công cộng gây dư luận ít nghiêm trọng.", "Vi phạm đến mức phải áp dụng hình thức khai trừ; vi phạm chính trị nội bộ; vi phạm an ninh quốc phòng xâm hại lợi ích quốc gia; sử dụng bằng cấp giả.", "Vi phạm về việc chậm nộp đảng phí tháng."] },
-    { id: 53, question: "Cán bộ, Kiểm sát viên có hành vi dùng bằng Cử nhân Luật giả mạo để thi tuyển công chức ngành Kiểm sát, sau 15 năm công tác mới bị phát hiện thì:", options: ["Hết thời hiệu xử lý kỷ luật vì đã quá 10 năm công tác.", "Vẫn bị xem xét xử lý kỷ luật và không áp dụng thời hiệu xử lý.", "Chỉ bị nhắc nhở rút kinh nghiệm vì đã có nhiều cống hiến.", "Được phép nộp bổ sung bằng thật để hợp thức hóa."] },
-    { id: 54, question: "Kiểm sát viên trong quá trình thực hành quyền công tố có hành vi làm sai lệch hồ sơ vụ án, cố tình bỏ lọt tội phạm hoặc thay đổi tội danh có lợi cho kẻ phạm tội để vụ lợi thì hình thức kỷ luật cao nhất là:", options: ["Khiển trách.", "Cảnh cáo.", "Cách chức Kiểm sát viên.", "Khai trừ ra khỏi Đảng."] },
-    { id: 55, question: "Kiểm sát viên tham gia đoàn kiểm sát trực tiếp nhưng tự ý nhận lời mời ăn uống, giao lưu văn hóa, du lịch cùng đối tượng đang chịu sự kiểm sát để trục lợi thì bị xử lý thế nào?", options: ["Bị xem xét thi hành kỷ luật nghiêm khắc theo quy định về vi phạm trong công tác thanh tra, kiểm tra, kiểm sát.", "Là hành vi xã giao bình thường để tạo sự hợp tác.", "Được phép nếu tự thanh toán tiền ăn của cá nhân.", "Chỉ bị xử lý nếu đối tượng kiểm sát có đơn khiếu nại."] },
-    { id: 56, question: "Đảng viên có hành vi dùng thẻ đảng viên, thẻ Kiểm sát viên đem đi thế chấp, cầm cố để vay mượn tiền của các đối tượng bên ngoài xã hội thì bị xử lý hình thức kỷ luật nào?", options: ["Phạt cảnh cáo nội bộ.", "Yêu cầu viết bản cam kết không tái phạm.", "Kỷ luật bằng hình thức Khai trừ ra khỏi Đảng.", "Tạm đình chỉ sinh hoạt 1 tháng."] },
-    { id: 57, question: "Trong thời gian đảng viên đang bị tổ chức đảng kiểm tra khi có dấu hiệu vi phạm hoặc đang trong quá trình giải quyết khiếu nại, tố cáo thì tổ chức:", options: ["Vẫn làm thủ tục thăng quân hàm, nâng lương trước thời hạn nếu đủ năm.", "Không thực hiện việc quy hoạch, bổ nhiệm, giới thiệu ứng cử, phong thăng chức vụ, khen thưởng đối với đảng viên đó.", "Bắt buộc cho nghỉ việc không lương.", "Yêu cầu bàn giao toàn bộ tài sản cá nhân cho cơ quan quản lý."] },
-    { id: 58, question: "Đảng viên công tác tại Viện kiểm sát có hành vi đánh bạc dưới mọi hình thức (kể cả chơi số đề, cá độ bóng đá, đánh bài ăn tiền qua mạng) thì bị xử lý kỷ luật thế nào?", options: ["Chỉ bị kiểm điểm nội bộ nếu số tiền đánh bạc dưới 1 triệu đồng.", "Không xử lý nếu tham gia vào các ngày lễ Tết.", "Được miễn trừ nếu tự giác nộp số tiền thắng cược.", "Bị kỷ luật bằng hình thức từ Cảnh cáo hoặc Cách chức đến Khai trừ khỏi Đảng tùy theo tính chất, mức độ hậu quả."] },
-    { id: 59, question: "Cán bộ kiểm sát có hành vi bạo lực gia đình, hành hạ, xúc phạm nghiêm trọng nhân phẩm, danh dự của cha mẹ, vợ con sẽ bị xử lý kỷ luật như thế nào?", options: ["Xem xét xử lý kỷ luật nghiêm minh theo quy định về phòng chống bạo lực gia đình và đạo đức, nếp sống văn minh (từ Khiển trách đến Khai trừ).", "Coi là việc nội bộ gia đình, tổ chức đảng không can thiệp.", "Bắt buộc ly hôn theo quyết định của Chi bộ.", "Chỉ nhắc nhở tại cuộc họp bình xét gia đình văn hóa cuối năm."] },
-    { id: 60, question: "Việc chấp hành nghiêm Quy định 207QĐ/TW, 208QĐ/TW và 212QĐ/TW của Đảng đối với cán bộ, Kiểm sát viên Viện kiểm sát nhân dân khu vực 1 Hà Tĩnh có ý nghĩa quyết định nhất là:", options: ["Nhằm đối phó các cuộc kiểm tra công vụ của Viện kiểm sát cấp trên.", "Giảm bớt số lượng vụ án phải thụ lý kiểm sát hàng năm.", "Giữ vững bản lĩnh chính trị, liêm chính tư pháp, xây dựng tổ chức Đảng trong sạch vững mạnh, hoàn thành xuất sắc nhiệm vụ bảo vệ pháp luật và công lý.", "Tự động nâng cao phụ cấp nghề nghiệp cho công chức."] }
-  ];
-
-  let candidate = { fullName: "", userId: "" };
+  let candidate = { fullName: "", unit: "", phone: "" };
+  // Do lech dong ho: serverNow - clientNow. Thoi gian con lai luon tinh theo dong ho server.
+  let serverOffset = 0;
+  let examDurationSec = DURATION_MINUTES * 60;
   let sessionToken = "";
   let examQuestions = [];
   let violationCount = 0;
@@ -723,7 +698,7 @@
   const telemetryLog = [];
   function recordTelemetry(eventType, extra = "") {
     telemetryLog.push({
-      t: Math.round((Date.now() - (window._examStartTime || Date.now())) / 1000),
+      t: Math.round(((Date.now() + serverOffset) - (window._examStartTime || (Date.now() + serverOffset))) / 1000),
       e: eventType,
       d: extra
     });
@@ -769,6 +744,8 @@
       remainingSeconds: remainingSeconds,
       violationCount: violationCount,
       startTime: window._examStartTime,
+      offset: serverOffset,
+      durationSec: examDurationSec,
       telemetry: telemetryLog
     };
     try {
@@ -786,7 +763,7 @@
       if (raw) {
         const saved = JSON.parse(raw);
         if (saved && saved.token && saved.remainingSeconds > 10) {
-          if (confirm(`Phát hiện bạn có bài thi của SBD "${saved.candidate.userId}" chưa nộp. Bạn có muốn tiếp tục làm bài không?`)) {
+          if (confirm(`Phát hiện bạn có bài thi của thí sinh "${saved.candidate.fullName}" (SĐT: ${saved.candidate.phone}) chưa nộp. Bạn có muốn tiếp tục làm bài không?`)) {
             restoreExamSession(saved);
           } else {
             clearLocalState();
@@ -800,13 +777,15 @@
     candidate = saved.candidate;
     sessionToken = saved.token;
     examQuestions = saved.questions;
-    remainingSeconds = saved.remainingSeconds;
     violationCount = saved.violationCount || 0;
     window._examStartTime = saved.startTime;
+    serverOffset = saved.offset || 0;
+    examDurationSec = saved.durationSec || DURATION_MINUTES * 60;
+    remainingSeconds = calcRemainingSeconds();
     
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('exam-screen').classList.remove('hidden');
-    document.getElementById('display-candidate').innerText = `Thí sinh: ${candidate.fullName} (SBD: ${candidate.userId})`;
+    document.getElementById('display-candidate').innerText = `Thí sinh: ${candidate.fullName} • ${candidate.unit} (${candidate.phone})`;
     document.getElementById('violation-display').innerText = `Số lần rời màn hình: ${violationCount}`;
 
     renderQuestionsFromData(examQuestions);
@@ -828,15 +807,22 @@
      ========================================================================== */
   function startExam() {
     const fullName = document.getElementById('full-name').value.trim();
-    const userId = document.getElementById('user-id').value.trim();
+    const unit = document.getElementById('unit-name').value.trim();
+    const phone = document.getElementById('phone-number').value.trim();
 
-    if (!fullName || !userId) {
-      alert("Vui lòng nhập đầy đủ cả Họ và tên và Số báo danh.");
+    if (!fullName || !unit || !phone) {
+      alert("Vui lòng nhập đầy đủ Họ và tên, Đơn vị và Số điện thoại.");
+      return;
+    }
+    const cleanPhone = phone.replace(/[\s.-]/g, '');
+    if (!/^[0-9]{9,11}$/.test(cleanPhone)) {
+      alert("Số điện thoại không hợp lệ. Vui lòng nhập từ 9 đến 11 chữ số.");
       return;
     }
 
     candidate.fullName = fullName;
-    candidate.userId = userId;
+    candidate.unit = unit;
+    candidate.phone = cleanPhone;
 
     const btnLogin = document.querySelector('.btn-login');
     btnLogin.disabled = true;
@@ -846,7 +832,7 @@
 
     const script = document.createElement('script');
     script.id = 'jsonp-start-script';
-    script.src = `${SCRIPT_URL}?action=startSession&userId=${encodeURIComponent(userId)}&fullName=${encodeURIComponent(fullName)}&callback=handleStartSessionResponse&_t=${Date.now()}`;
+    script.src = `${SCRIPT_URL}?action=startSession&phone=${encodeURIComponent(cleanPhone)}&userId=${encodeURIComponent(cleanPhone)}&fullName=${encodeURIComponent(fullName)}&unit=${encodeURIComponent(unit)}&callback=handleStartSessionResponse&_t=${Date.now()}`;
     script.onerror = function() {
       btnLogin.disabled = false;
       btnLogin.innerText = "Đăng nhập thi";
@@ -862,7 +848,7 @@
     cleanupScript('jsonp-start-script');
 
     if (response.status === "ALREADY_TAKEN") {
-      alert(`Thí sinh "${candidate.fullName}" (SBD: ${candidate.userId}) đã hoàn thành bài thi trước đó!\n\nMỗi thí sinh chỉ được tham gia 01 lần duy nhất.`);
+      alert(`Số điện thoại "${candidate.phone}" (${candidate.fullName}) đã hoàn thành bài thi trước đó!\n\nMỗi thí sinh chỉ được tham gia 01 lần duy nhất.`);
       showLeaderboardScreen();
       return;
     }
@@ -872,16 +858,20 @@
       return;
     }
 
-    sessionToken = response.token || ("SESSION_" + Date.now());
-    window._examStartTime = response.startTime || Date.now();
-    remainingSeconds = DURATION_MINUTES * 60;
+    if (!response.token || !Array.isArray(response.questions) || response.questions.length === 0) {
+      alert("Máy chủ không trả về đề thi. Vui lòng thử lại hoặc liên hệ Ban tổ chức.");
+      return;
+    }
 
-    const takeCount = Math.min(EXAM_QUESTION_COUNT, rawQuestions.length);
-    const selectedPool = shuffle(rawQuestions).slice(0, takeCount);
-    examQuestions = selectedPool.map(q => {
-      let mapped = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
-      return { ...q, options: shuffle(mapped) };
-    });
+    // Đề thi (đã trộn, không kèm đáp án) và mốc thời gian do SERVER cấp
+    sessionToken = response.token;
+    window._examStartTime = response.startTime;
+    serverOffset = (response.serverNow || Date.now()) - Date.now();
+    examDurationSec = response.durationSec || DURATION_MINUTES * 60;
+    remainingSeconds = calcRemainingSeconds();
+    examQuestions = response.questions;
+    if (response.fullName) candidate.fullName = response.fullName;
+    if (response.unit) candidate.unit = response.unit;
 
     Object.freeze(candidate);
 
@@ -891,7 +881,7 @@
 
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('exam-screen').classList.remove('hidden');
-    document.getElementById('display-candidate').innerText = `Thí sinh: ${candidate.fullName} (SBD: ${candidate.userId})`;
+    document.getElementById('display-candidate').innerText = `Thí sinh: ${candidate.fullName} • ${candidate.unit} (${candidate.phone})`;
 
     recordTelemetry("START_EXAM", "Bắt đầu làm bài");
     renderQuestionsFromData(examQuestions);
@@ -931,10 +921,15 @@
 
   /* ==========================================================================
      ========================================================================== */
+  function calcRemainingSeconds() {
+    const elapsed = Math.floor(((Date.now() + serverOffset) - window._examStartTime) / 1000);
+    return Math.max(0, examDurationSec - elapsed);
+  }
+
   function startTimer() {
     updateTimerDisplay();
     timerInterval = setInterval(() => {
-      remainingSeconds--;
+      remainingSeconds = calcRemainingSeconds();
       updateTimerDisplay();
       if (remainingSeconds % 5 === 0) saveLocalState();
 
@@ -1011,14 +1006,13 @@
       });
     });
 
-    const timeSpentReal = Math.max(1, Math.round((Date.now() - window._examStartTime) / 1000));
-
     const payload = {
       fullName: candidate.fullName,
-      userId: candidate.userId,
+      unit: candidate.unit,
+      phone: candidate.phone,
+      token: sessionToken,
       answers: userAnswers,
       prediction: predictionVal,
-      timeSpent: timeSpentReal,
       violationCount: violationCount,
       telemetry: telemetryLog
     };
@@ -1117,11 +1111,11 @@
         <table class="leaderboard-table">
           <thead>
             <tr>
-              <th style="width: 12%; text-align: center;">Hạng</th>
-              <th style="width: 38%;">Họ và tên</th>
-              <th style="width: 18%; text-align: center;">Điểm số</th>
-              <th style="width: 16%; text-align: center;">Thời gian</th>
-              <th style="width: 16%; text-align: center;">Dự đoán</th>
+              <th style="width: 10%; text-align: center;">Hạng</th>
+              <th style="width: 40%;">Thí sinh / Đơn vị</th>
+              <th style="width: 16%; text-align: center;">Điểm số</th>
+              <th style="width: 17%; text-align: center;">Thời gian</th>
+              <th style="width: 17%; text-align: center;">Dự đoán</th>
             </tr>
           </thead>
           <tbody id="${currentTargetContainerId}-body"></tbody>
@@ -1130,12 +1124,17 @@
     `;
 
     const tbody = document.getElementById(`${currentTargetContainerId}-body`);
-    const currentUserIdNorm = (candidate.userId || "").trim().toLowerCase();
+    function maskPhone(p) {
+      if (!p || p.length < 7) return p || '';
+      return p.slice(0, 4) + '***' + p.slice(-3);
+    }
+
+    const currentPhone = (candidate.phone || "").trim();
     const currentNameNorm = (candidate.fullName || "").trim().toLowerCase();
 
     const myResult = data.find(item => 
-      (item.userId && item.userId.trim().toLowerCase() === currentUserIdNorm) ||
-      (item.fullName && item.fullName.trim().toLowerCase() === currentNameNorm)
+      (currentPhone && item.phone && item.phone === currentPhone) ||
+      (currentNameNorm && item.fullName && item.fullName.trim().toLowerCase() === currentNameNorm)
     );
     if (myResult && document.getElementById('score-summary')) {
       document.getElementById('score-summary').innerText = `Kết quả của bạn: ${myResult.score} / ${myResult.totalQuestions} câu`;
@@ -1148,7 +1147,7 @@
       else if (index === 2) rankClass = "rank-3";
 
       const isCurrentCandidate = (
-        (currentUserIdNorm && item.userId && item.userId.trim().toLowerCase() === currentUserIdNorm) ||
+        (currentPhone && item.phone && item.phone === currentPhone) ||
         (currentNameNorm && item.fullName && item.fullName.trim().toLowerCase() === currentNameNorm)
       );
 
@@ -1164,7 +1163,9 @@
             <div style="font-weight: 600; color: #1e293b;">
               ${item.fullName} ${youBadge}
             </div>
-            <div style="font-size: 11.5px; color: #64748b;">SBD: ${item.userId}</div>
+            <div style="font-size: 11.5px; color: #64748b;">
+              ${item.unit ? item.unit + ' • ' : ''}${maskPhone(item.phone)}
+            </div>
           </td>
           <td style="text-align: center; font-weight: bold; color: #1456a7;">
             ${item.score}/${item.totalQuestions}
