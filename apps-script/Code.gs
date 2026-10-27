@@ -326,8 +326,9 @@ function getLeaderboard_() {
   const rows = last < 2 ? [] : sh.getRange(2, 1, last - 1, 8).getValues();
   const completed = rows.length;
 
-  if (completed < CONFIG.MIN_FOR_LEADERBOARD) {
-    return { isUnlocked: false, completedCount: completed, requiredCount: CONFIG.MIN_FOR_LEADERBOARD, data: [] };
+  const minRequired = (typeof CONFIG.MIN_FOR_LEADERBOARD === 'number') ? CONFIG.MIN_FOR_LEADERBOARD : 5;
+  if (minRequired > 0 && completed < minRequired) {
+    return { isUnlocked: false, completedCount: completed, requiredCount: minRequired, data: [] };
   }
 
   const data = rows.map(function (r) {

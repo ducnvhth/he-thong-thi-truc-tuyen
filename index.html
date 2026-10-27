@@ -201,6 +201,50 @@
       background: rgba(255, 255, 255, 0.28);
     }
 
+    .leaderboard-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: stretch;
+      width: 100%;
+    }
+    .btn-nav {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 42px;
+      white-space: nowrap;
+      text-align: center;
+      transition: all 0.2s;
+      box-sizing: border-box;
+      line-height: 1.2;
+      text-decoration: none;
+    }
+    .btn-nav-primary {
+      background: #1456a7;
+      color: #ffffff;
+      border: 1px solid #1456a7;
+      box-shadow: 0 2px 5px rgba(20, 86, 167, 0.2);
+    }
+    .btn-nav-primary:hover {
+      background: #0f4485;
+      border-color: #0f4485;
+    }
+    .btn-nav-secondary {
+      background: #f1f5f9;
+      color: #1456a7;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-nav-secondary:hover {
+      background: #e2e8f0;
+    }
+
     .portal-footer {
       border-top: 1px solid rgba(255,255,255,0.2);
       margin-top: 30px;
@@ -223,7 +267,7 @@
       position: relative;
     }
     .exam-box .unit-brand-text h1 { color: #1456a7; }
-    .exam-box .unit-brand-text h2 { color: #d9534f; }
+    .exam-box .unit-brand-text h2 { color: #1456a7; }
     .exam-box .unit-brand-header {
       border-bottom: 2px solid #eef2f7;
       padding-bottom: 18px;
@@ -503,6 +547,19 @@
 
     .partner-footer { display: none; }
 
+    /* Khi mở màn hình làm bài, kết quả hoặc bảng xếp hạng: ẩn hoàn toàn poster body::after */
+    body.in-subscreen::after,
+    body:has(#login-screen.hidden)::after,
+    body:has(#leaderboard-screen:not(.hidden))::after,
+    body:has(#exam-screen:not(.hidden))::after,
+    body:has(#result-screen:not(.hidden))::after {
+      display: none !important;
+    }
+
+    #leaderboard-screen .unit-brand-text h2 {
+      color: #1456a7;
+    }
+
     @media (max-width: 680px), (max-aspect-ratio: 71/100) {
       body {
         flex-direction: column;
@@ -544,7 +601,11 @@
         flex-shrink: 0;
       }
 
-      .portal-box, .exam-box { padding: 22px 16px; border-radius: 8px; }
+      .portal-box, .exam-box { 
+        padding: 22px 16px; 
+        border-radius: 10px; 
+        margin: 16px auto; 
+      }
       .unit-brand-header { flex-direction: column; gap: 12px; margin-bottom: 18px; }
       .unit-brand-header img { width: 68px; height: 68px; }
       .unit-brand-text h1 { font-size: 16px; }
@@ -654,6 +715,16 @@
     <p id="score-summary" style="font-size: 24px; font-weight: bold; color: #1456a7; margin-bottom: 6px;">Đang tính điểm...</p>
     <p id="prediction-summary" style="font-size: 15px; color: #555; margin-bottom: 20px;"></p>
 
+    <!-- Nút quay lại trang chủ / tải lại ở đầu kết quả -->
+    <div class="leaderboard-toolbar" style="max-width: 440px; margin: 0 auto 20px auto;">
+      <button type="button" class="btn-nav btn-nav-primary" onclick="backToLoginScreen()">
+        <span>← Về trang chủ</span>
+      </button>
+      <button type="button" class="btn-nav btn-nav-secondary" onclick="loadLeaderboardJSONP('result-leaderboard-container', true)">
+        <span>↻ Tải lại BXH</span>
+      </button>
+    </div>
+
     <div id="result-leaderboard-container"></div>
   </div>
 
@@ -664,9 +735,13 @@
       </div>
     </div>
 
-    <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-      <button type="button" class="btn-secondary" style="background: #1456a7; color: #fff; border: none;" onclick="backToLoginScreen()">← Quay lại trang chính</button>
-      <button type="button" class="btn-secondary" style="background: #f1f5f9; color: #1456a7; border: 1px solid #cbd5e1;" onclick="loadLeaderboardJSONP('standalone-leaderboard-container', true)">Tải lại</button>
+    <div class="leaderboard-toolbar">
+      <button type="button" class="btn-nav btn-nav-primary" onclick="backToLoginScreen()">
+        <span>← Về trang chủ</span>
+      </button>
+      <button type="button" class="btn-nav btn-nav-secondary" onclick="loadLeaderboardJSONP('standalone-leaderboard-container', true)">
+        <span>↻ Tải lại</span>
+      </button>
     </div>
 
     <div id="standalone-leaderboard-container"></div>
@@ -921,6 +996,7 @@
       document.documentElement.requestFullscreen().catch(() => {});
     }
 
+    document.body.classList.add('in-subscreen');
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('exam-screen').classList.remove('hidden');
     document.getElementById('display-candidate').innerText = `Thí sinh: ${candidate.fullName} • ${candidate.unit} (${candidate.phone})`;
@@ -1145,9 +1221,8 @@
     container.innerHTML = `
       <div class="leaderboard-wrap">
         ${!isStandalone ? `
-          <div class="leaderboard-title">
+          <div class="leaderboard-title" style="justify-content: center; text-align: center;">
             <span>BẢNG XẾP HẠNG THÀNH TÍCH CHÍNH THỨC</span>
-            <button type="button" onclick="loadLeaderboardJSONP('${currentTargetContainerId}', true)" style="background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">Cập nhật</button>
           </div>
         ` : ''}
         <table class="leaderboard-table">
@@ -1229,14 +1304,19 @@
   };
 
   function showLeaderboardScreen() {
+    document.body.classList.add('in-subscreen');
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('leaderboard-screen').classList.remove('hidden');
     loadLeaderboardJSONP('standalone-leaderboard-container', true);
   }
 
   function backToLoginScreen() {
+    document.body.classList.remove('in-subscreen');
     document.getElementById('leaderboard-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.add('hidden');
+    document.getElementById('exam-screen').classList.add('hidden');
     document.getElementById('login-screen').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
 </body>

@@ -40,7 +40,7 @@ Bạn có thể tùy chỉnh các thông số trong `Code.gs` theo yêu cầu cu
 | `DURATION_SEC`        | `15 * 60` (900s)                                 | Thời gian làm bài (15 phút, phải khớp với `DURATION_MINUTES` ở `index.html`)                       |
 | `GRACE_SEC`           | `60`                                             | Độ trễ bù trừ mạng chậm khi nộp bài (60 giây). Nộp quá thời gian này sẽ ghi nhận nộp trễ và 0 điểm |
 | `QUESTION_COUNT`      | `30`                                             | Số lượng câu hỏi ngẫu nhiên bốc cho mỗi đề thi                                                     |
-| `MIN_FOR_LEADERBOARD` | `5`                                              | Số thí sinh hoàn thành tối thiểu để tự động mở Bảng xếp hạng                                       |
+| `MIN_FOR_LEADERBOARD` | `5`                                              | Số thí sinh hoàn thành tối thiểu để tự động mở Bảng xếp hạng (đặt `0` hoặc `1` nếu muốn mở ngay) |
 
 ---
 
